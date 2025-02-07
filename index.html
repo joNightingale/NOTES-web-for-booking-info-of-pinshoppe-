@@ -61,76 +61,81 @@
             max-height: 50px;
             cursor: pointer;
         }
-        select, input {
-            padding: 5px;
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            margin: 10px auto;
+            display: block;
+            border: 1px solid #800000;
+            border-radius: 5px;
         }
-        .admin-tools {
-            display: none;
+        @media screen and (max-width: 768px) {
+            th, td {
+                font-size: 14px;
+                padding: 8px;
+            }
+            img {
+                max-width: 40px;
+                max-height: 40px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="modeSelection">
-        <h2>Select Mode</h2>
-        <button onclick="setMode('viewer')">Viewer</button>
-        <button onclick="setMode('admin')">Admin</button>
+
+    <div id="accessMode">
+        <h2>Select Access Mode</h2>
+        <button onclick="verifyAdmin()">Admin</button>
+        <button onclick="enterAsViewer()">Viewer</button>
     </div>
 
-    <div id="adminLogin" style="display: none;">
-        <h2>Enter Admin Password</h2>
-        <input type="password" id="adminPassword">
-        <button onclick="checkPassword()">Login</button>
-    </div>
-
-    <div id="content" class="container" style="display: none;">
-        <h2>📌 pinSHOPPE Booking Records</h2>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Contact</th>
-                        <th>Grade & Section</th>
-                        <th>Design</th>
-                        <th>Custom Design</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="bookingList"></tbody>
-            </table>
+    <div id="notesApp" style="display: none;">
+        <div class="container">
+            <h2>📌 pinSHOPPE Booking Records</h2>
+            <input type="text" id="searchBar" placeholder="Search bookings..." onkeyup="searchBookings()">
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Grade & Section</th>
+                            <th>Design</th>
+                            <th>Custom Design</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingList"></tbody>
+                </table>
+            </div>
+            <button id="clearBtn" onclick="clearBookings()">Clear All</button>
         </div>
-        <button id="clearBtn" class="admin-tools" onclick="clearBookings()">Clear All</button>
     </div>
 
     <script>
         let isAdmin = false;
-        const correctPassword = "JoNyPinNa123";
 
-        function setMode(mode) {
-            document.getElementById("modeSelection").style.display = "none";
-            if (mode === "admin") {
-                document.getElementById("adminLogin").style.display = "block";
-            } else {
-                isAdmin = false;
-                document.getElementById("content").style.display = "block";
+        function verifyAdmin() {
+            let password = prompt("Enter Admin Password:");
+            if (password === "sodium_chloride") {
+                isAdmin = true;
+                document.getElementById("accessMode").style.display = "none";
+                document.getElementById("notesApp").style.display = "block";
                 loadBookings();
+            } else {
+                alert("Incorrect Password! Access Denied.");
             }
         }
 
-        function checkPassword() {
-            const inputPassword = document.getElementById("adminPassword").value;
-            if (inputPassword === correctPassword) {
-                isAdmin = true;
-                document.getElementById("adminLogin").style.display = "none";
-                document.getElementById("content").style.display = "block";
-                document.querySelectorAll(".admin-tools").forEach(el => el.style.display = "inline-block");
-                loadBookings();
-            } else {
-                alert("Incorrect password. Access denied.");
-            }
+        function enterAsViewer() {
+            isAdmin = false;
+            document.getElementById("accessMode").style.display = "none";
+            document.getElementById("notesApp").style.display = "block";
+            loadBookings();
+            document.getElementById("clearBtn").style.display = "none"; // Hide admin actions
         }
 
         function loadBookings() {
@@ -147,66 +152,44 @@
                                  <td>${booking.customDesign ? `<img src="${booking.customDesign}" onclick="openImage('${booking.customDesign}')" alt="Custom Design">` : 'None'}</td>
                                  <td>${booking.date}</td>
                                  <td>${booking.time}</td>
-                                 <td>
-                                    ${isAdmin ? `<select onchange="updateStatus(${index}, this.value)">
-                                        <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                        <option value="In Progress" ${booking.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                                        <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                                    </select>` : booking.status}
-                                 </td>
-                                 <td>
-                                    ${isAdmin ? `<button onclick="editBooking(${index})">✏️ Edit</button> 
-                                                 <button onclick="deleteBooking(${index})">🗑 Delete</button>` : ''}
-                                 </td>`;
+                                 <td>${isAdmin ? `<button onclick="deleteBooking(${index})">🗑 Delete</button>` : 'N/A'}</td>`;
                 bookingList.appendChild(row);
             });
+        }
 
-            checkUpcomingBookings(bookings);
+        function searchBookings() {
+            let searchInput = document.getElementById("searchBar").value.toLowerCase();
+            let rows = document.querySelectorAll("#bookingList tr");
+
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(searchInput) ? "" : "none";
+            });
         }
 
         function openImage(url) {
             window.open(url, '_blank');
         }
 
-        function updateStatus(index, newStatus) {
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            bookings[index].status = newStatus;
-            localStorage.setItem("bookings", JSON.stringify(bookings));
-            logAction(`Updated status of booking ${index} to ${newStatus}`);
-            loadBookings();
-        }
-
-        function editBooking(index) {
-            let newName = prompt("Enter new name:");
-            if (newName) {
-                let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-                bookings[index].name = newName;
-                localStorage.setItem("bookings", JSON.stringify(bookings));
-                logAction(`Edited booking ${index}`);
-                loadBookings();
-            }
-        }
-
         function deleteBooking(index) {
+            if (!isAdmin) return;
             let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
             bookings.splice(index, 1);
             localStorage.setItem("bookings", JSON.stringify(bookings));
             loadBookings();
         }
 
-        function checkUpcomingBookings(bookings) {
-            bookings.forEach(booking => {
-                if (booking.status === "Pending") {
-                    alert(`Reminder: Booking for ${booking.name} is still pending.`);
-                }
-            });
+        function clearBookings() {
+            if (!isAdmin) return;
+            if (confirm("Are you sure you want to clear all bookings?")) {
+                localStorage.removeItem("bookings");
+                loadBookings();
+            }
         }
 
-        function logAction(action) {
-            console.log(`[Admin Log] ${action}`);
-        }
-
-        document.addEventListener("DOMContentLoaded", loadBookings);
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("notesApp").style.display = "none";
+        });
     </script>
 </body>
 </html>
