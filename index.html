@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Name Storage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background: #800000;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #5a0e0e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Booking Name Storage</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="nameList"></tbody>
+        </table>
+        <button onclick="clearNames()">Clear All</button>
+    </div>
+
+    <script>
+        function loadNames() {
+            let names = JSON.parse(localStorage.getItem("storedNames")) || [];
+            let nameList = document.getElementById("nameList");
+            nameList.innerHTML = "";
+
+            names.forEach((name, index) => {
+                let row = document.createElement("tr");
+                row.innerHTML = `<td>${name}</td>
+                                 <td><button onclick="deleteName(${index})">Delete</button></td>`;
+                nameList.appendChild(row);
+            });
+        }
+
+        function deleteName(index) {
+            let names = JSON.parse(localStorage.getItem("storedNames")) || [];
+            names.splice(index, 1);
+            localStorage.setItem("storedNames", JSON.stringify(names));
+            loadNames();
+        }
+
+        function clearNames() {
+            if (confirm("Are you sure you want to clear all names?")) {
+                localStorage.removeItem("storedNames");
+                loadNames();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadNames);
+    </script>
+</body>
+</html>
