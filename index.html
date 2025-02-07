@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Name Storage</title>
+    <title>Booking Records</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,7 +13,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 400px;
+            max-width: 800px;
             margin: auto;
             background: white;
             padding: 20px;
@@ -28,64 +28,84 @@
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
+            text-align: center;
         }
         button {
             background: #800000;
             color: white;
             border: none;
-            padding: 10px;
-            margin-top: 10px;
+            padding: 5px;
             cursor: pointer;
         }
         button:hover {
             background: #5a0e0e;
         }
+        img {
+            max-width: 50px;
+            max-height: 50px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Booking Name Storage</h2>
+        <h2>Booking Records</h2>
         <table>
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Contact</th>
+                    <th>Grade & Section</th>
+                    <th>Design</th>
+                    <th>Custom Design</th>
+                    <th>Date</th>
+                    <th>Time</th>
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody id="nameList"></tbody>
+            <tbody id="bookingList"></tbody>
         </table>
-        <button onclick="clearNames()">Clear All</button>
+        <button onclick="clearBookings()">Clear All</button>
     </div>
 
     <script>
-        function loadNames() {
-            let names = JSON.parse(localStorage.getItem("storedNames")) || [];
-            let nameList = document.getElementById("nameList");
-            nameList.innerHTML = "";
+        function loadBookings() {
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            let bookingList = document.getElementById("bookingList");
+            bookingList.innerHTML = "";
 
-            names.forEach((name, index) => {
+            bookings.forEach((booking, index) => {
                 let row = document.createElement("tr");
-                row.innerHTML = `<td>${name}</td>
-                                 <td><button onclick="deleteName(${index})">Delete</button></td>`;
-                nameList.appendChild(row);
+                row.innerHTML = `<td>${booking.name}</td>
+                                 <td>${booking.contact}</td>
+                                 <td>${booking.grade}</td>
+                                 <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
+                                 <td>${booking.customDesign ? `<img src="${booking.customDesign}" onclick="openImage('${booking.customDesign}')" alt="Custom Design">` : 'None'}</td>
+                                 <td>${booking.date}</td>
+                                 <td>${booking.time}</td>
+                                 <td><button onclick="deleteBooking(${index})">Delete</button></td>`;
+                bookingList.appendChild(row);
             });
         }
 
-        function deleteName(index) {
-            let names = JSON.parse(localStorage.getItem("storedNames")) || [];
-            names.splice(index, 1);
-            localStorage.setItem("storedNames", JSON.stringify(names));
-            loadNames();
+        function openImage(url) {
+            window.open(url, '_blank');
         }
 
-        function clearNames() {
-            if (confirm("Are you sure you want to clear all names?")) {
-                localStorage.removeItem("storedNames");
-                loadNames();
+        function deleteBooking(index) {
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings.splice(index, 1);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+            loadBookings();
+        }
+
+        function clearBookings() {
+            if (confirm("Are you sure you want to clear all bookings?")) {
+                localStorage.removeItem("bookings");
+                loadBookings();
             }
         }
 
-        document.addEventListener("DOMContentLoaded", loadNames);
+        document.addEventListener("DOMContentLoaded", loadBookings);
     </script>
 </body>
 </html>
