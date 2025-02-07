@@ -4,137 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pinSHOPPE Booking Records</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 100%;
-            width: 95%;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-        h2 {
-            color: #800000;
-            margin-bottom: 15px;
-        }
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 750px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-            white-space: nowrap;
-        }
-        th {
-            background-color: #800000;
-            color: white;
-        }
-        button {
-            background: #800000;
-            color: white;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background: #5a0e0e;
-        }
-        img {
-            max-width: 50px;
-            max-height: 50px;
-            cursor: pointer;
-        }
-        @media screen and (max-width: 768px) {
-            th, td {
-                font-size: 14px;
-                padding: 8px;
-            }
-            img {
-                max-width: 40px;
-                max-height: 40px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header>
+        <h1>pinSHOPPE Booking Records</h1>
+        <input type="text" id="searchBar" placeholder="Search for a booking..." onkeyup="searchBookings()">
+    </header>
+
     <div class="container">
-        <h2>📌 pinSHOPPE Booking Records</h2>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Contact</th>
-                        <th>Grade & Section</th>
-                        <th>Design</th>
-                        <th>Custom Design</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="bookingList"></tbody>
-            </table>
-        </div>
-        <button onclick="clearBookings()">Clear All</button>
+        <table id="bookingTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Grade</th>
+                    <th>Design</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Custom Design</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Bookings will be loaded here -->
+            </tbody>
+        </table>
     </div>
 
-    <script>
-        function loadBookings() {
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            let bookingList = document.getElementById("bookingList");
-            bookingList.innerHTML = "";
-
-            bookings.forEach((booking, index) => {
-                let row = document.createElement("tr");
-                row.innerHTML = `<td>${booking.name}</td>
-                                 <td>${booking.contact}</td>
-                                 <td>${booking.grade}</td>
-                                 <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
-                                 <td>${booking.customDesign ? `<img src="${booking.customDesign}" onclick="openImage('${booking.customDesign}')" alt="Custom Design">` : 'None'}</td>
-                                 <td>${booking.date}</td>
-                                 <td>${booking.time}</td>
-                                 <td><button onclick="deleteBooking(${index})">🗑 Delete</button></td>`;
-                bookingList.appendChild(row);
-            });
-        }
-
-        function openImage(url) {
-            window.open(url, '_blank');
-        }
-
-        function deleteBooking(index) {
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            bookings.splice(index, 1);
-            localStorage.setItem("bookings", JSON.stringify(bookings));
-            loadBookings();
-        }
-
-        function clearBookings() {
-            if (confirm("Are you sure you want to clear all bookings?")) {
-                localStorage.removeItem("bookings");
-                loadBookings();
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", loadBookings);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
