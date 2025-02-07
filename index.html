@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Records</title>
+    <title>pinSHOPPE Booking Records</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,23 +13,33 @@
             padding: 20px;
         }
         .container {
-            max-width: 90%;
+            max-width: 100%;
+            width: 95%;
             margin: auto;
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        h2 {
+            color: #800000;
+            margin-bottom: 15px;
+        }
+        .table-wrapper {
+            width: 100%;
             overflow-x: auto;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 600px;
+            min-width: 750px;
         }
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: center;
+            white-space: nowrap;
         }
         th {
             background-color: #800000;
@@ -41,6 +51,7 @@
             border: none;
             padding: 5px;
             cursor: pointer;
+            border-radius: 5px;
         }
         button:hover {
             background: #5a0e0e;
@@ -51,10 +62,6 @@
             cursor: pointer;
         }
         @media screen and (max-width: 768px) {
-            table {
-                display: block;
-                overflow-x: auto;
-            }
             th, td {
                 font-size: 14px;
                 padding: 8px;
@@ -68,22 +75,24 @@
 </head>
 <body>
     <div class="container">
-        <h2>📌 Booking Records</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Contact</th>
-                    <th>Grade & Section</th>
-                    <th>Design</th>
-                    <th>Custom Design</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="bookingList"></tbody>
-        </table>
+        <h2>📌 pinSHOPPE Booking Records</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Grade & Section</th>
+                        <th>Design</th>
+                        <th>Custom Design</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingList"></tbody>
+            </table>
+        </div>
         <button onclick="clearBookings()">Clear All</button>
     </div>
 
