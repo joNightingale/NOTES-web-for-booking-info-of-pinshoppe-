@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pin Shoppe Booking Records</title>
+    <title>pinSHOPPE Booking Records</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,49 +61,29 @@
             max-height: 50px;
             cursor: pointer;
         }
-        .hidden {
+        select, input {
+            padding: 5px;
+        }
+        .admin-tools {
             display: none;
-        }
-        .search-box {
-            margin-bottom: 15px;
-        }
-        .search-box input {
-            padding: 8px;
-            margin-right: 10px;
-            border: 1px solid #800000;
-            border-radius: 5px;
-        }
-        .role-selection {
-            text-align: center;
-            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="role-selection">
-        <h2>Select Your Role</h2>
-        <button onclick="selectRole('viewer')">Viewer</button>
-        <button onclick="promptAdmin()">Admin</button>
+    <div id="modeSelection">
+        <h2>Select Mode</h2>
+        <button onclick="setMode('viewer')">Viewer</button>
+        <button onclick="setMode('admin')">Admin</button>
     </div>
 
-    <div class="container hidden" id="mainContainer">
-        <h2>📌 Pin Shoppe Booking Records</h2>
+    <div id="adminLogin" style="display: none;">
+        <h2>Enter Admin Password</h2>
+        <input type="password" id="adminPassword">
+        <button onclick="checkPassword()">Login</button>
+    </div>
 
-        <div class="search-box">
-            <input type="text" id="searchName" placeholder="Search by Name" onkeyup="filterRecords()">
-            <input type="text" id="searchGrade" placeholder="Search by Grade & Section" onkeyup="filterRecords()">
-            <input type="date" id="searchDate" onchange="filterRecords()">
-            <select id="searchDesign" onchange="filterRecords()">
-                <option value="">All Designs</option>
-                <option value="Custom">Custom</option>
-                <script>
-                    for (let i = 1; i <= 20; i++) {
-                        document.write(`<option value="Design ${i}">Design ${i}</option>`);
-                    }
-                </script>
-            </select>
-        </div>
-
+    <div id="content" class="container" style="display: none;">
+        <h2>📌 pinSHOPPE Booking Records</h2>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -115,44 +95,42 @@
                         <th>Custom Design</th>
                         <th>Date</th>
                         <th>Time</th>
-                        <th class="admin-only hidden">Action</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="bookingList"></tbody>
             </table>
         </div>
-        <button class="admin-only hidden" onclick="clearBookings()">Clear All</button>
+        <button id="clearBtn" class="admin-tools" onclick="clearBookings()">Clear All</button>
     </div>
 
     <script>
         let isAdmin = false;
+        const correctPassword = "JoNyPinNa123";
 
-        function promptAdmin() {
-            let password = prompt("Enter Admin Password:");
-            if (password === "JoNyPinNa123") {
+        function setMode(mode) {
+            document.getElementById("modeSelection").style.display = "none";
+            if (mode === "admin") {
+                document.getElementById("adminLogin").style.display = "block";
+            } else {
+                isAdmin = false;
+                document.getElementById("content").style.display = "block";
+                loadBookings();
+            }
+        }
+
+        function checkPassword() {
+            const inputPassword = document.getElementById("adminPassword").value;
+            if (inputPassword === correctPassword) {
                 isAdmin = true;
-                enterSite();
+                document.getElementById("adminLogin").style.display = "none";
+                document.getElementById("content").style.display = "block";
+                document.querySelectorAll(".admin-tools").forEach(el => el.style.display = "inline-block");
+                loadBookings();
             } else {
                 alert("Incorrect password. Access denied.");
             }
-        }
-
-        function selectRole(role) {
-            isAdmin = role === "admin";
-            enterSite();
-        }
-
-        function enterSite() {
-            document.querySelector(".role-selection").classList.add("hidden");
-            document.getElementById("mainContainer").classList.remove("hidden");
-
-            if (!isAdmin) {
-                document.querySelectorAll(".admin-only").forEach(el => el.classList.add("hidden"));
-            } else {
-                document.querySelectorAll(".admin-only").forEach(el => el.classList.remove("hidden"));
-            }
-            
-            loadBookings();
         }
 
         function loadBookings() {
@@ -162,44 +140,51 @@
 
             bookings.forEach((booking, index) => {
                 let row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${booking.name}</td>
-                    <td>${booking.contact}</td>
-                    <td>${booking.grade}</td>
-                    <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
-                    <td>${booking.customDesign ? `<img src="${booking.customDesign}" onclick="openImage('${booking.customDesign}')" alt="Custom Design">` : 'None'}</td>
-                    <td>${booking.date}</td>
-                    <td>${booking.time}</td>
-                    ${isAdmin ? `<td><button onclick="deleteBooking(${index})">🗑 Delete</button></td>` : ''}
-                `;
+                row.innerHTML = `<td>${booking.name}</td>
+                                 <td>${booking.contact}</td>
+                                 <td>${booking.grade}</td>
+                                 <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
+                                 <td>${booking.customDesign ? `<img src="${booking.customDesign}" onclick="openImage('${booking.customDesign}')" alt="Custom Design">` : 'None'}</td>
+                                 <td>${booking.date}</td>
+                                 <td>${booking.time}</td>
+                                 <td>
+                                    ${isAdmin ? `<select onchange="updateStatus(${index}, this.value)">
+                                        <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                        <option value="In Progress" ${booking.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                        <option value="Completed" ${booking.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                    </select>` : booking.status}
+                                 </td>
+                                 <td>
+                                    ${isAdmin ? `<button onclick="editBooking(${index})">✏️ Edit</button> 
+                                                 <button onclick="deleteBooking(${index})">🗑 Delete</button>` : ''}
+                                 </td>`;
                 bookingList.appendChild(row);
             });
-        }
 
-        function filterRecords() {
-            let nameFilter = document.getElementById("searchName").value.toLowerCase();
-            let gradeFilter = document.getElementById("searchGrade").value.toLowerCase();
-            let dateFilter = document.getElementById("searchDate").value;
-            let designFilter = document.getElementById("searchDesign").value;
-
-            let rows = document.querySelectorAll("#bookingList tr");
-            rows.forEach(row => {
-                let name = row.children[0].textContent.toLowerCase();
-                let grade = row.children[2].textContent.toLowerCase();
-                let date = row.children[5].textContent;
-                let design = row.children[3].textContent;
-
-                let match = (!nameFilter || name.includes(nameFilter)) &&
-                            (!gradeFilter || grade.includes(gradeFilter)) &&
-                            (!dateFilter || date === dateFilter) &&
-                            (!designFilter || design.includes(designFilter));
-
-                row.style.display = match ? "" : "none";
-            });
+            checkUpcomingBookings(bookings);
         }
 
         function openImage(url) {
             window.open(url, '_blank');
+        }
+
+        function updateStatus(index, newStatus) {
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings[index].status = newStatus;
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+            logAction(`Updated status of booking ${index} to ${newStatus}`);
+            loadBookings();
+        }
+
+        function editBooking(index) {
+            let newName = prompt("Enter new name:");
+            if (newName) {
+                let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+                bookings[index].name = newName;
+                localStorage.setItem("bookings", JSON.stringify(bookings));
+                logAction(`Edited booking ${index}`);
+                loadBookings();
+            }
         }
 
         function deleteBooking(index) {
@@ -209,11 +194,16 @@
             loadBookings();
         }
 
-        function clearBookings() {
-            if (confirm("Are you sure you want to clear all bookings?")) {
-                localStorage.removeItem("bookings");
-                loadBookings();
-            }
+        function checkUpcomingBookings(bookings) {
+            bookings.forEach(booking => {
+                if (booking.status === "Pending") {
+                    alert(`Reminder: Booking for ${booking.name} is still pending.`);
+                }
+            });
+        }
+
+        function logAction(action) {
+            console.log(`[Admin Log] ${action}`);
         }
 
         document.addEventListener("DOMContentLoaded", loadBookings);
