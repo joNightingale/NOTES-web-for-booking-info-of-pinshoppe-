@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pin Shoppe - Booking</title>
+    <title>Note Storage</title>
     <style>
         body {
             font-family: 'Times New Roman', serif;
@@ -66,26 +66,13 @@
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-bottom: 5px;
-        }
-        input, select {
+        textarea {
+            width: 100%;
+            height: 300px;
             padding: 10px;
-            margin-bottom: 15px;
             border: 1px solid #800000;
             border-radius: 5px;
-        }
-        input[type="submit"] {
-            background-color: #800000;
-            color: white;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #5a0e0e;
+            resize: none;
         }
         /* Tracker Button */
         .tracker-btn {
@@ -109,8 +96,8 @@
 <body>
 <header>
     <span class="menu-btn" onclick="toggleSidebar()">☰</span>
-    <h1>Pin Shoppe</h1>
-    <p>Make your mark, one pin at a time with Pin Shoppe</p>
+    <h1>Note Storage</h1>
+    <p>Securely store your important notes</p>
 </header>
 
 <!-- Sidebar Menu -->
@@ -118,46 +105,17 @@
     <a href="#" onclick="toggleDarkMode()">🌗 Light/Dark Mode</a>
     <a href="#" onclick="trackIP()">📍 Track Visitor IP</a>
     <a href="#">🔍 Track Someone (Coming Soon)</a>
-    <a href="#" onclick="showArchive()">📂 View Booking Archive</a>
+    <a href="#" onclick="showArchive()">📂 View Note Archive</a>
 </div>
 
-<!-- Booking Form -->
+<!-- Note Storage -->
 <div class="container">
-    <h2>Book Your Pins</h2>
-    <form id="bookingForm">
-        <label for="name">Full Name:</label>
-        <input type="text" id="name" name="name" required>
-
-        <label for="contact">Contact Number:</label>
-        <input type="text" id="contact" name="contact" required>
-
-        <label for="grade">Grade & Section:</label>
-        <input type="text" id="grade" name="grade" required>
-
-        <label for="design">Choose a Design (1-20):</label>
-        <select id="design" name="design">
-            <option value="">Select a Design</option>
-            <script>
-                for (let i = 1; i <= 20; i++) {
-                    document.write(`<option value="${i}">Design ${i}</option>`);
-                }
-            </script>
-        </select>
-
-        <label for="customDesign">Upload Custom Design (Optional):</label>
-        <input type="file" id="customDesign" name="customDesign" accept="image/*">
-
-        <input type="submit" value="Book Now">
-    </form>
-
-    <!-- Tracker Button -->
-    <a href="https://jonightingale.github.io/NOTES-web-for-booking-info-of-pinshoppe-/" class="tracker-btn">
-        Track Your Booking
-    </a>
+    <h2>Stored Notes</h2>
+    <textarea id="notes" placeholder="Type your notes here..."></textarea>
 </div>
 
 <footer>
-    <p>&copy; 2025 Pin Shoppe. All Rights Reserved.</p>
+    <p>&copy; 2025 Note Storage. All Rights Reserved.</p>
 </footer>
 
 <script>
@@ -185,45 +143,17 @@
         .catch(() => alert("Failed to track IP."));
     }
 
-    // Archive Booking
+    // Archive Notes
     function showArchive() {
-        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-        if (bookings.length === 0) {
-            alert("No archived bookings found.");
-            return;
-        }
-
-        let archiveWindow = window.open("", "_blank", "width=500,height=600");
-        archiveWindow.document.write("<h2>Booking Archive</h2>");
-        archiveWindow.document.write("<ul>");
-        bookings.forEach(b => {
-            archiveWindow.document.write(`<li>${b.name} - ${b.design || "Custom Design"} - ${b.date}</li>`);
-        });
-        archiveWindow.document.write("</ul>");
+        let notes = localStorage.getItem("notesArchive") || "No archived notes.";
+        alert("Archived Notes: \n" + notes);
     }
 
-    // Booking Submission
-    document.getElementById("bookingForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        let formData = {
-            name: document.getElementById("name").value.trim(),
-            contact: document.getElementById("contact").value.trim(),
-            grade: document.getElementById("grade").value.trim(),
-            design: document.getElementById("design").value || "Custom Design"
-        };
-
-        if (!formData.name || !formData.contact || !formData.grade || !formData.design) {
-            alert("Please complete all required fields.");
-            return;
-        }
-
-        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-        bookings.push(formData);
-        localStorage.setItem("bookings", JSON.stringify(bookings));
-
-        alert("Booking successful! Your order will be processed soon.");
-        this.reset();
+    // Auto Save Notes
+    let notesField = document.getElementById("notes");
+    notesField.value = localStorage.getItem("savedNotes") || "";
+    notesField.addEventListener("input", () => {
+        localStorage.setItem("savedNotes", notesField.value);
     });
 </script>
 </body>
