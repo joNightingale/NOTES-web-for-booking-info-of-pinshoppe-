@@ -3,221 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PinSHOPPE Booking Records</title>
+    <title>Pin Shoppe - Booking</title>
     <style>
-        /* General Styles */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f0ff;
-            text-align: center;
+            font-family: 'Times New Roman', serif;
+            background-color: white;
+            color: #4A235A;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
         }
-        .container {
-            max-width: 100%;
-            width: 90%;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-        h2 {
-            color: #800000;
-        }
-        .hidden {
-            display: none;
-        }
-
-        /* Login Page */
-        #login {
-            background: white;
-            padding: 20px;
-            width: 300px;
-            margin: auto;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        input[type="password"] {
-            width: 80%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #800000;
-            border-radius: 5px;
-        }
-        button {
-            background: #800000;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        button:hover {
-            background: #5a0e0e;
-        }
-        .error {
-            color: red;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        /* Table Styling */
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 750px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th {
+        /* Header */
+        header {
             background-color: #800000;
             color: white;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 24px;
+            position: relative;
         }
-        tr:hover {
-            background-color: #f2f2f2;
+        /* Sidebar */
+        .menu-btn {
+            position: absolute;
+            left: 10px;
+            top: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
         }
-
-        /* Filters */
-        .filter-container {
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background: #4A235A;
+            color: white;
+            padding-top: 60px;
+            transition: 0.3s;
+        }
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 15px;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+        }
+        .sidebar a:hover {
+            background: #6D1B7B;
+        }
+        /* Dark Mode */
+        .dark-mode {
+            background-color: black;
+            color: white;
+        }
+        /* Container */
+        .container {
+            width: 60%;
+            margin: 20px auto;
+            background: #f8f0ff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+        }
+        input, select {
+            padding: 10px;
             margin-bottom: 15px;
-        }
-        .filter-container input, select {
-            padding: 5px;
-            margin-right: 5px;
             border: 1px solid #800000;
             border-radius: 5px;
         }
-
+        input[type="submit"] {
+            background-color: #800000;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #5a0e0e;
+        }
+        /* Tracker Button */
+        .tracker-btn {
+            display: block;
+            width: 60%;
+            margin: 20px auto;
+            background-color: #800000;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .tracker-btn:hover {
+            background-color: #5a0e0e;
+        }
     </style>
 </head>
 <body>
-    
-    <!-- Login Page -->
-    <div id="login">
-        <h2>🔒 Choose Your Role</h2>
-        <button onclick="setMode('viewer')">Viewer</button>
-        <button onclick="showPasswordInput()">Admin</button>
-        <div id="password-section" class="hidden">
-            <input type="password" id="adminPassword" placeholder="Enter Admin Password">
-            <button onclick="verifyAdmin()">Login</button>
-            <p id="error-message" class="error hidden">Incorrect password!</p>
-        </div>
-    </div>
+<header>
+    <span class="menu-btn" onclick="toggleSidebar()">☰</span>
+    <h1>Pin Shoppe</h1>
+    <p>Make your mark, one pin at a time with Pin Shoppe</p>
+</header>
 
-    <!-- Main Content -->
-    <div id="main-content" class="container hidden">
-        <h2>📌 PinSHOPPE Booking Records</h2>
-        
-        <!-- Filters -->
-        <div class="filter-container">
-            <input type="text" id="searchName" placeholder="Search by Name" oninput="filterResults()">
-            <input type="text" id="searchContact" placeholder="Search by Contact" oninput="filterResults()">
-            <input type="text" id="searchGrade" placeholder="Search by Grade & Section" oninput="filterResults()">
-        </div>
+<!-- Sidebar Menu -->
+<div class="sidebar" id="sidebar">
+    <a href="#" onclick="toggleDarkMode()">🌗 Light/Dark Mode</a>
+    <a href="#" onclick="trackIP()">📍 Track Visitor IP</a>
+    <a href="#">🔍 Track Someone (Coming Soon)</a>
+    <a href="#" onclick="showArchive()">📂 View Booking Archive</a>
+</div>
 
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Contact</th>
-                        <th>Grade & Section</th>
-                        <th>Design</th>
-                        <th>Custom Design</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th id="adminActions" class="hidden">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="bookingList"></tbody>
-            </table>
-        </div>
-        
-        <button id="clearBtn" class="hidden" onclick="clearBookings()">Clear All</button>
-    </div>
+<!-- Booking Form -->
+<div class="container">
+    <h2>Book Your Pins</h2>
+    <form id="bookingForm">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" required>
 
-    <script>
-        let isAdmin = false;
+        <label for="contact">Contact Number:</label>
+        <input type="text" id="contact" name="contact" required>
 
-        function showPasswordInput() {
-            document.getElementById("password-section").classList.remove("hidden");
+        <label for="grade">Grade & Section:</label>
+        <input type="text" id="grade" name="grade" required>
+
+        <label for="design">Choose a Design (1-20):</label>
+        <select id="design" name="design">
+            <option value="">Select a Design</option>
+            <script>
+                for (let i = 1; i <= 20; i++) {
+                    document.write(`<option value="${i}">Design ${i}</option>`);
+                }
+            </script>
+        </select>
+
+        <label for="customDesign">Upload Custom Design (Optional):</label>
+        <input type="file" id="customDesign" name="customDesign" accept="image/*">
+
+        <input type="submit" value="Book Now">
+    </form>
+
+    <!-- Tracker Button -->
+    <a href="https://jonightingale.github.io/NOTES-web-for-booking-info-of-pinshoppe-/" class="tracker-btn">
+        Track Your Booking
+    </a>
+</div>
+
+<footer>
+    <p>&copy; 2025 Pin Shoppe. All Rights Reserved.</p>
+</footer>
+
+<script>
+    // Sidebar Toggle
+    function toggleSidebar() {
+        let sidebar = document.getElementById("sidebar");
+        sidebar.style.left = sidebar.style.left === "0px" ? "-250px" : "0px";
+    }
+
+    // Light/Dark Mode Toggle
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+    }
+
+    // Track Visitor IP
+    function trackIP() {
+        fetch("https://api64.ipify.org?format=json")
+        .then(response => response.json())
+        .then(data => {
+            let ips = JSON.parse(localStorage.getItem("visitorIPs")) || [];
+            ips.push(data.ip);
+            localStorage.setItem("visitorIPs", JSON.stringify(ips));
+            alert("Your IP (" + data.ip + ") has been recorded.");
+        })
+        .catch(() => alert("Failed to track IP."));
+    }
+
+    // Archive Booking
+    function showArchive() {
+        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        if (bookings.length === 0) {
+            alert("No archived bookings found.");
+            return;
         }
 
-        function verifyAdmin() {
-            let password = document.getElementById("adminPassword").value;
-            if (password === "sodium_chloride") {
-                isAdmin = true;
-                document.getElementById("login").classList.add("hidden");
-                document.getElementById("main-content").classList.remove("hidden");
-                document.getElementById("adminActions").classList.remove("hidden");
-                document.getElementById("clearBtn").classList.remove("hidden");
-                loadBookings();
-            } else {
-                document.getElementById("error-message").classList.remove("hidden");
-            }
+        let archiveWindow = window.open("", "_blank", "width=500,height=600");
+        archiveWindow.document.write("<h2>Booking Archive</h2>");
+        archiveWindow.document.write("<ul>");
+        bookings.forEach(b => {
+            archiveWindow.document.write(`<li>${b.name} - ${b.design || "Custom Design"} - ${b.date}</li>`);
+        });
+        archiveWindow.document.write("</ul>");
+    }
+
+    // Booking Submission
+    document.getElementById("bookingForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        let formData = {
+            name: document.getElementById("name").value.trim(),
+            contact: document.getElementById("contact").value.trim(),
+            grade: document.getElementById("grade").value.trim(),
+            design: document.getElementById("design").value || "Custom Design"
+        };
+
+        if (!formData.name || !formData.contact || !formData.grade || !formData.design) {
+            alert("Please complete all required fields.");
+            return;
         }
 
-        function setMode(mode) {
-            if (mode === "viewer") {
-                document.getElementById("login").classList.add("hidden");
-                document.getElementById("main-content").classList.remove("hidden");
-            }
-            loadBookings();
-        }
+        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        bookings.push(formData);
+        localStorage.setItem("bookings", JSON.stringify(bookings));
 
-        function loadBookings() {
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            let bookingList = document.getElementById("bookingList");
-            bookingList.innerHTML = "";
-
-            bookings.forEach((booking, index) => {
-                let row = document.createElement("tr");
-                row.innerHTML = `<td>${booking.name}</td>
-                                 <td>${booking.contact}</td>
-                                 <td>${booking.grade}</td>
-                                 <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
-                                 <td>${booking.customDesign ? `<img src="${booking.customDesign}" width="50" height="50" onclick="openImage('${booking.customDesign}')">` : 'None'}</td>
-                                 <td>${booking.date}</td>
-                                 <td>${booking.time}</td>
-                                 ${isAdmin ? `<td><button onclick="deleteBooking(${index})">🗑 Delete</button></td>` : ''}`;
-                bookingList.appendChild(row);
-            });
-        }
-
-        function filterResults() {
-            let nameFilter = document.getElementById("searchName").value.toLowerCase();
-            let contactFilter = document.getElementById("searchContact").value.toLowerCase();
-            let gradeFilter = document.getElementById("searchGrade").value.toLowerCase();
-
-            [...document.querySelectorAll("#bookingList tr")].forEach(row => {
-                let text = row.innerText.toLowerCase();
-                row.style.display = text.includes(nameFilter) && text.includes(contactFilter) && text.includes(gradeFilter) ? "" : "none";
-            });
-        }
-
-        function deleteBooking(index) {
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            bookings.splice(index, 1);
-            localStorage.setItem("bookings", JSON.stringify(bookings));
-            loadBookings();
-        }
-
-        function clearBookings() {
-            localStorage.removeItem("bookings");
-            loadBookings();
-        }
-    </script>
+        alert("Booking successful! Your order will be processed soon.");
+        this.reset();
+    });
+</script>
 </body>
 </html>
