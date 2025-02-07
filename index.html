@@ -12,7 +12,6 @@
             text-align: center;
             margin: 0;
             padding: 20px;
-            transition: background 0.3s, color 0.3s;
         }
         .container {
             max-width: 100%;
@@ -31,41 +30,39 @@
             display: none;
         }
 
-        /* Sidebar */
-        .menu-btn {
-            position: absolute;
-            left: 10px;
-            top: 15px;
-            font-size: 24px;
+        /* Login Page */
+        #login {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        input[type="password"] {
+            width: 80%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #800000;
+            border-radius: 5px;
+        }
+        button {
+            background: #800000;
+            color: white;
+            border: none;
+            padding: 8px 15px;
             cursor: pointer;
-            color: white;
+            border-radius: 5px;
+            margin-top: 10px;
         }
-        .sidebar {
-            position: fixed;
-            left: -250px;
-            top: 0;
-            width: 250px;
-            height: 100%;
-            background: #4A235A;
-            color: white;
-            padding-top: 60px;
-            transition: 0.3s;
+        button:hover {
+            background: #5a0e0e;
         }
-        .sidebar a {
-            display: block;
-            color: white;
-            padding: 15px;
-            text-decoration: none;
-            border-bottom: 1px solid #ddd;
-        }
-        .sidebar a:hover {
-            background: #6D1B7B;
-        }
-
-        /* Dark Mode */
-        .dark-mode {
-            background-color: black;
-            color: white;
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
         /* Table Styling */
@@ -96,136 +93,158 @@
         .filter-container {
             margin-bottom: 15px;
         }
-        .filter-container input {
+        .filter-container input, select {
             padding: 5px;
             margin-right: 5px;
             border: 1px solid #800000;
             border-radius: 5px;
         }
+
+        /* Sidebar Menu */
+        .menu {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #800000;
+            color: white;
+            padding: 20px;
+            transition: 0.3s;
+        }
+        .menu.open {
+            left: 0;
+        }
+        .menu button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            background: #5a0e0e;
+        }
+        .menu-toggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #800000;
+            color: white;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
-
-<!-- Sidebar Menu -->
-<div class="sidebar" id="sidebar">
-    <a href="#" onclick="toggleDarkMode()">🌗 Light/Dark Mode</a>
-    <a href="#" onclick="trackIP()">📍 Track Visitor IP</a>
-    <a href="#">📋 Order Summary</a>
-    <a href="#">📦 Delivered Orders</a>
-    <a href="#">🚚 Order Status</a>
-</div>
-
-<!-- Login Page -->
-<div id="login">
-    <h2>🔒 Choose Your Role</h2>
-    <button onclick="setMode('viewer')">Viewer</button>
-    <button onclick="showPasswordInput()">Admin</button>
-    <div id="password-section" class="hidden">
-        <input type="password" id="adminPassword" placeholder="Enter Admin Password">
-        <button onclick="verifyAdmin()">Login</button>
-        <p id="error-message" class="error hidden">Incorrect password!</p>
-    </div>
-</div>
-
-<!-- Main Content -->
-<div id="main-content" class="container hidden">
-    <h2>📌 PinSHOPPE Booking Records</h2>
     
-    <!-- Filters -->
-    <div class="filter-container">
-        <input type="text" id="searchName" placeholder="Search by Name" oninput="filterResults()">
-        <input type="text" id="searchContact" placeholder="Search by Contact" oninput="filterResults()">
-        <input type="text" id="searchGrade" placeholder="Search by Grade & Section" oninput="filterResults()">
+    <!-- Login Page -->
+    <div id="login">
+        <h2>🔒 Choose Your Role</h2>
+        <button onclick="setMode('viewer')">Viewer</button>
+        <button onclick="showPasswordInput()">Admin</button>
+        <div id="password-section" class="hidden">
+            <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+            <button onclick="verifyAdmin()">Login</button>
+            <p id="error-message" class="error hidden">Incorrect password!</p>
+        </div>
     </div>
 
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Contact</th>
-                    <th>Grade & Section</th>
-                    <th>Design</th>
-                    <th>Custom Design</th>
-                    <th>Status</th>
-                    <th id="adminActions" class="hidden">Action</th>
-                </tr>
-            </thead>
-            <tbody id="bookingList"></tbody>
-        </table>
+    <!-- Sidebar Menu (Admin Only) -->
+    <button class="menu-toggle hidden" onclick="toggleMenu()">☰</button>
+    <div class="menu hidden">
+        <h3>Admin Menu</h3>
+        <button onclick="toggleDarkMode()">Light/Dark Mode</button>
+        <button onclick="trackIP()">Track IP</button>
+        <button onclick="showOrderCount()">Order Count</button>
+        <button onclick="showPendingOrders()">Pending Orders</button>
+        <button onclick="showArchive()">View Archive</button>
     </div>
-    
-    <button id="clearBtn" class="hidden" onclick="clearBookings()">Clear All</button>
-</div>
 
-<script>
-    let isAdmin = false;
+    <!-- Main Content -->
+    <div id="main-content" class="container hidden">
+        <h2>📌 PinSHOPPE Booking Records</h2>
+        
+        <!-- Filters -->
+        <div class="filter-container">
+            <input type="text" id="searchName" placeholder="Search by Name" oninput="filterResults()">
+            <input type="text" id="searchContact" placeholder="Search by Contact" oninput="filterResults()">
+            <input type="text" id="searchGrade" placeholder="Search by Grade & Section" oninput="filterResults()">
+        </div>
 
-    function showPasswordInput() {
-        document.getElementById("password-section").classList.remove("hidden");
-    }
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Grade & Section</th>
+                        <th>Design</th>
+                        <th>Custom Design</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th id="adminActions" class="hidden">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingList"></tbody>
+            </table>
+        </div>
+        
+        <button id="clearBtn" class="hidden" onclick="clearBookings()">Clear All</button>
+    </div>
 
-    function verifyAdmin() {
-        let password = document.getElementById("adminPassword").value;
-        if (password === "sodium_chloride") {
-            isAdmin = true;
-            document.getElementById("login").classList.add("hidden");
-            document.getElementById("main-content").classList.remove("hidden");
-            document.getElementById("adminActions").classList.remove("hidden");
-            document.getElementById("clearBtn").classList.remove("hidden");
+    <script>
+        let isAdmin = false;
+
+        function showPasswordInput() {
+            document.getElementById("password-section").classList.remove("hidden");
+        }
+
+        function verifyAdmin() {
+            let password = document.getElementById("adminPassword").value;
+            if (password === "sodium_chloride") {
+                isAdmin = true;
+                document.getElementById("login").classList.add("hidden");
+                document.getElementById("main-content").classList.remove("hidden");
+                document.getElementById("adminActions").classList.remove("hidden");
+                document.querySelector(".menu").classList.remove("hidden");
+                document.querySelector(".menu-toggle").classList.remove("hidden");
+                loadBookings();
+            } else {
+                document.getElementById("error-message").classList.remove("hidden");
+            }
+        }
+
+        function setMode(mode) {
+            if (mode === "viewer") {
+                document.getElementById("login").classList.add("hidden");
+                document.getElementById("main-content").classList.remove("hidden");
+            }
             loadBookings();
-        } else {
-            document.getElementById("error-message").classList.remove("hidden");
         }
-    }
 
-    function setMode(mode) {
-        if (mode === "viewer") {
-            document.getElementById("login").classList.add("hidden");
-            document.getElementById("main-content").classList.remove("hidden");
+        function toggleMenu() {
+            document.querySelector(".menu").classList.toggle("open");
         }
-        loadBookings();
-    }
 
-    function toggleDarkMode() {
-        document.body.classList.toggle("dark-mode");
-    }
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
 
-    function trackIP() {
-        fetch("https://api64.ipify.org?format=json")
-        .then(response => response.json())
-        .then(data => {
-            let ips = JSON.parse(localStorage.getItem("visitorIPs")) || [];
-            ips.push(data.ip);
-            localStorage.setItem("visitorIPs", JSON.stringify(ips));
-            alert("Your IP (" + data.ip + ") has been recorded.");
-        })
-        .catch(() => alert("Failed to track IP."));
-    }
+        function trackIP() {
+            alert("IP Tracking Activated");
+        }
 
-    function loadBookings() {
-        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-        let bookingList = document.getElementById("bookingList");
-        bookingList.innerHTML = "";
+        function showOrderCount() {
+            alert("Total Orders: " + document.querySelectorAll("#bookingList tr").length);
+        }
 
-        bookings.forEach((booking, index) => {
-            let row = document.createElement("tr");
-            row.innerHTML = `<td>${booking.name}</td>
-                             <td>${booking.contact}</td>
-                             <td>${booking.grade}</td>
-                             <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
-                             <td>${booking.customDesign ? `<img src="${booking.customDesign}" width="50" height="50">` : 'None'}</td>
-                             <td>${booking.status || 'Pending'}</td>
-                             ${isAdmin ? `<td><button onclick="deleteBooking(${index})">🗑 Delete</button></td>` : ''}`;
-            bookingList.appendChild(row);
-        });
-    }
+        function showPendingOrders() {
+            alert("Pending Orders: " + document.querySelectorAll("#bookingList tr:contains('Pending')").length);
+        }
 
-    function clearBookings() {
-        localStorage.removeItem("bookings");
-        loadBookings();
-    }
-</script>
-
+        function showArchive() {
+            alert("Viewing Archive...");
+        }
+    </script>
 </body>
 </html>
