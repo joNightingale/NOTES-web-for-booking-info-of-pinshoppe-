@@ -99,11 +99,9 @@
             border: 1px solid #800000;
             border-radius: 5px;
         }
-
     </style>
 </head>
 <body>
-    
     <!-- Login Page -->
     <div id="login">
         <h2>🔒 Choose Your Role</h2>
@@ -138,6 +136,7 @@
                         <th>Custom Design</th>
                         <th>Date</th>
                         <th>Time</th>
+                        <th>Status</th>
                         <th id="adminActions" class="hidden">Action</th>
                     </tr>
                 </thead>
@@ -155,9 +154,16 @@
             document.getElementById("password-section").classList.remove("hidden");
         }
 
-        function verifyAdmin() {
+        async function verifyAdmin() {
             let password = document.getElementById("adminPassword").value;
-            if (password === "sodium_chloride") {
+            const response = await fetch('/verify-admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const result = await response.json();
+
+            if (result.success) {
                 isAdmin = true;
                 document.getElementById("login").classList.add("hidden");
                 document.getElementById("main-content").classList.remove("hidden");
@@ -177,8 +183,9 @@
             loadBookings();
         }
 
-        function loadBookings() {
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        async function loadBookings() {
+            const response = await fetch('/bookings');
+            const bookings = await response.json();
             let bookingList = document.getElementById("bookingList");
             bookingList.innerHTML = "";
 
@@ -191,9 +198,41 @@
                                  <td>${booking.customDesign ? `<img src="${booking.customDesign}" width="50" height="50" onclick="openImage('${booking.customDesign}')">` : 'None'}</td>
                                  <td>${booking.date}</td>
                                  <td>${booking.time}</td>
-                                 ${isAdmin ? `<td><button onclick="deleteBooking(${index})">🗑 Delete</button></td>` : ''}`;
+                                 <td>${booking.status}</td>
+                                 ${isAdmin ? `<td>
+                                     <select onchange="updateStatus(${index}, this.value)">
+                                         <option value="Being Made" ${booking.status === "Being Made" ? "selected" : ""}>Being Made</option>
+                                         <option value="Preparing" ${booking.status === "Preparing" ? "selected" : ""}>Preparing</option>
+                                         <option value="Delivering" ${booking.status === "Delivering" ? "selected" : ""}>Delivering</option>
+                                         <option value="Delivered" ${booking.status === "Delivered" ? "selected" : ""}>Delivered</option>
+                                     </select>
+                                     <button onclick="deleteBooking(${index})">🗑 Delete</button>
+                                 </td>` : ''}`;
                 bookingList.appendChild(row);
             });
+        }
+
+        async function updateStatus(index, status) {
+            await fetch('/update-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ index, status })
+            });
+            loadBookings();
+        }
+
+        async function deleteBooking(index) {
+            await fetch('/delete-booking', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ index })
+            });
+            loadBookings();
+        }
+
+        async function clearBookings() {
+            await fetch('/clear-bookings', { method: 'POST' });
+            loadBookings();
         }
 
         function filterResults() {
@@ -205,18 +244,6 @@
                 let text = row.innerText.toLowerCase();
                 row.style.display = text.includes(nameFilter) && text.includes(contactFilter) && text.includes(gradeFilter) ? "" : "none";
             });
-        }
-
-        function deleteBooking(index) {
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            bookings.splice(index, 1);
-            localStorage.setItem("bookings", JSON.stringify(bookings));
-            loadBookings();
-        }
-
-        function clearBookings() {
-            localStorage.removeItem("bookings");
-            loadBookings();
         }
     </script>
 </body>
