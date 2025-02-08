@@ -21,7 +21,6 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
         }
         h2 {
             color: #800000;
@@ -38,7 +37,6 @@
             margin: auto;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
         }
         input[type="password"] {
             width: 80%;
@@ -54,7 +52,6 @@
             padding: 8px 15px;
             cursor: pointer;
             border-radius: 5px;
-            margin-top: 10px;
         }
         button:hover {
             background: #5a0e0e;
@@ -93,7 +90,7 @@
         .filter-container {
             margin-bottom: 15px;
         }
-        .filter-container input, select {
+        .filter-container input {
             padding: 5px;
             margin-right: 5px;
             border: 1px solid #800000;
@@ -149,21 +146,15 @@
 
     <script>
         let isAdmin = false;
+        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
         function showPasswordInput() {
             document.getElementById("password-section").classList.remove("hidden");
         }
 
-        async function verifyAdmin() {
+        function verifyAdmin() {
             let password = document.getElementById("adminPassword").value;
-            const response = await fetch('/verify-admin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password })
-            });
-            const result = await response.json();
-
-            if (result.success) {
+            if (password === "sodium_chloride") {
                 isAdmin = true;
                 document.getElementById("login").classList.add("hidden");
                 document.getElementById("main-content").classList.remove("hidden");
@@ -176,16 +167,12 @@
         }
 
         function setMode(mode) {
-            if (mode === "viewer") {
-                document.getElementById("login").classList.add("hidden");
-                document.getElementById("main-content").classList.remove("hidden");
-            }
+            document.getElementById("login").classList.add("hidden");
+            document.getElementById("main-content").classList.remove("hidden");
             loadBookings();
         }
 
-        async function loadBookings() {
-            const response = await fetch('/bookings');
-            const bookings = await response.json();
+        function loadBookings() {
             let bookingList = document.getElementById("bookingList");
             bookingList.innerHTML = "";
 
@@ -212,38 +199,22 @@
             });
         }
 
-        async function updateStatus(index, status) {
-            await fetch('/update-status', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ index, status })
-            });
+        function updateStatus(index, status) {
+            bookings[index].status = status;
+            localStorage.setItem("bookings", JSON.stringify(bookings));
             loadBookings();
         }
 
-        async function deleteBooking(index) {
-            await fetch('/delete-booking', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ index })
-            });
+        function deleteBooking(index) {
+            bookings.splice(index, 1);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
             loadBookings();
         }
 
-        async function clearBookings() {
-            await fetch('/clear-bookings', { method: 'POST' });
+        function clearBookings() {
+            bookings = [];
+            localStorage.setItem("bookings", JSON.stringify(bookings));
             loadBookings();
-        }
-
-        function filterResults() {
-            let nameFilter = document.getElementById("searchName").value.toLowerCase();
-            let contactFilter = document.getElementById("searchContact").value.toLowerCase();
-            let gradeFilter = document.getElementById("searchGrade").value.toLowerCase();
-
-            [...document.querySelectorAll("#bookingList tr")].forEach(row => {
-                let text = row.innerText.toLowerCase();
-                row.style.display = text.includes(nameFilter) && text.includes(contactFilter) && text.includes(gradeFilter) ? "" : "none";
-            });
         }
     </script>
 </body>
