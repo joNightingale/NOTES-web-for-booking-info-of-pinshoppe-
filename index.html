@@ -200,7 +200,7 @@
             <p id="error-message" class="error hidden">Incorrect password!</p>
         </div>
     </div>
-    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pre-made pin badges let you express yourself in style. From sleek minimalist designs to eye-catching custom artworks, we bring your ideas to life—one pin at a time. 🛍️💖 Get yours today and pin your story to the world!</p>
+    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pr[...]
 
     <!-- Main Content -->
     <div id="main-content" class="container hidden">
@@ -353,6 +353,21 @@
             }
 
             let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+            // Check for duplicates
+            let isDuplicate = bookings.some(booking => 
+                booking.name === formData.name &&
+                booking.contact === formData.contact &&
+                booking.grade === formData.grade &&
+                booking.date === formData.date &&
+                booking.time === formData.time
+            );
+
+            if (isDuplicate) {
+                alert("Duplicate booking detected. Please modify your details.");
+                return;
+            }
+
             bookings.push(formData);
             localStorage.setItem("bookings", JSON.stringify(bookings));
 
