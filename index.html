@@ -321,6 +321,9 @@
 
         // Back button functionality
         function goBack() {
+            isAdmin = false;
+            document.getElementById("adminPassword").value = "";
+            document.getElementById("error-message").classList.add("hidden");
             document.getElementById("main-content").classList.add("hidden");
             document.getElementById("login").classList.remove("hidden");
         }
