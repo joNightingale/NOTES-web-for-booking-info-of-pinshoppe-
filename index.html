@@ -28,42 +28,14 @@
         .hidden {
             display: none;
         }
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 750px;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th {
-            background-color: #800000;
-            color: white;
-        }
-        tr:hover {
-            background-color: #f2f2f2;
+        .status-select {
+            padding: 5px;
+            border: 1px solid #800000;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div id="login">
-        <h2>🔒 Choose Your Role</h2>
-        <button onclick="setMode('viewer')">Viewer</button>
-        <button onclick="showPasswordInput()">Admin</button>
-        <div id="password-section" class="hidden">
-            <input type="password" id="adminPassword" placeholder="Enter Admin Password">
-            <button onclick="verifyAdmin()">Login</button>
-            <p id="error-message" class="error hidden">Incorrect password!</p>
-        </div>
-    </div>
-
     <div id="main-content" class="container hidden">
         <h2>📌 PinSHOPPE Booking Records</h2>
         <div class="table-wrapper">
@@ -74,6 +46,7 @@
                         <th>Contact</th>
                         <th>Grade & Section</th>
                         <th>Design</th>
+                        <th>Custom Design</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Status</th>
@@ -84,70 +57,36 @@
             </table>
         </div>
     </div>
-
     <script>
         let isAdmin = false;
-
-        function showPasswordInput() {
-            document.getElementById("password-section").classList.remove("hidden");
-        }
-
-        function verifyAdmin() {
-            let password = document.getElementById("adminPassword").value;
-            if (password === "sodium_chloride") {
-                isAdmin = true;
-                document.getElementById("login").classList.add("hidden");
-                document.getElementById("main-content").classList.remove("hidden");
-                document.getElementById("adminActions").classList.remove("hidden");
-                loadBookings();
-            } else {
-                document.getElementById("error-message").classList.remove("hidden");
-            }
-        }
-
-        function setMode(mode) {
-            if (mode === "viewer") {
-                document.getElementById("login").classList.add("hidden");
-                document.getElementById("main-content").classList.remove("hidden");
-            }
-            loadBookings();
-        }
-
         function loadBookings() {
             let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
             let bookingList = document.getElementById("bookingList");
             bookingList.innerHTML = "";
-
             bookings.forEach((booking, index) => {
                 let row = document.createElement("tr");
                 row.innerHTML = `<td>${booking.name}</td>
                                  <td>${booking.contact}</td>
                                  <td>${booking.grade}</td>
                                  <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
+                                 <td>${booking.customDesign ? `<img src="${booking.customDesign}" width="50" height="50">` : 'None'}</td>
                                  <td>${booking.date}</td>
                                  <td>${booking.time}</td>
-                                 <td>${isAdmin ? getStatusDropdown(index, booking.status) : booking.status}</td>
+                                 <td>
+                                    ${isAdmin ? `<select class='status-select' onchange='updateStatus(${index}, this.value)'>
+                                        <option value="Pending" ${booking.status === "Pending" ? "selected" : ""}>Pending</option>
+                                        <option value="Prepared" ${booking.status === "Prepared" ? "selected" : ""}>Prepared</option>
+                                        <option value="Shipping" ${booking.status === "Shipping" ? "selected" : ""}>Shipping</option>
+                                        <option value="Delivered" ${booking.status === "Delivered" ? "selected" : ""}>Delivered</option>
+                                    </select>` : booking.status}
+                                 </td>
                                  ${isAdmin ? `<td><button onclick="deleteBooking(${index})">🗑 Delete</button></td>` : ''}`;
                 bookingList.appendChild(row);
             });
         }
-
-        function getStatusDropdown(index, currentStatus) {
-            let statuses = ["Pending", "Prepared", "Shipping", "Delivered"];
-            let options = statuses.map(status => `<option value="${status}" ${status === currentStatus ? "selected" : ""}>${status}</option>`).join('');
-            return `<select onchange="updateStatus(${index}, this.value)">${options}</select>`;
-        }
-
-        function updateStatus(index, newStatus) {
+        function updateStatus(index, status) {
             let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            bookings[index].status = newStatus;
-            localStorage.setItem("bookings", JSON.stringify(bookings));
-            loadBookings();
-        }
-
-        function deleteBooking(index) {
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            bookings.splice(index, 1);
+            bookings[index].status = status;
             localStorage.setItem("bookings", JSON.stringify(bookings));
             loadBookings();
         }
