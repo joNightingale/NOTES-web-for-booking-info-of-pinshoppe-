@@ -100,10 +100,73 @@
             border-radius: 5px;
         }
 
+        /* Hamburger Menu */
+        .menu-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .menu-btn div {
+            width: 30px;
+            height: 3px;
+            background: #800000;
+            border-radius: 5px;
+        }
+        .nav-menu {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f8f0ff;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            width: 200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .nav-menu a {
+            padding: 10px;
+            text-decoration: none;
+            color: #800000;
+            width: 100%;
+            text-align: center;
+        }
+        .nav-menu button {
+            background: #800000;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .menu-btn {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body>
-    
+    <!-- Hamburger Menu -->
+    <button class="menu-btn hidden" id="adminMenuBtn" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </button>
+    <div class="nav-menu hidden" id="navMenu">
+        <a href="#">IP Address Tracking</a>
+        <a href="#">Dark Mode</a>
+        <a href="#">Archive Bookings</a>
+        <a href="#">Order Summary</a>
+        <button onclick="toggleMenu()">Back</button>
+    </div>
+
     <!-- Login Page -->
     <div id="login">
         <h2>🔒 Choose Your Role</h2>
@@ -151,6 +214,10 @@
     <script>
         let isAdmin = false;
 
+        function toggleMenu() {
+            document.getElementById("navMenu").classList.toggle("hidden");
+        }
+
         function showPasswordInput() {
             document.getElementById("password-section").classList.remove("hidden");
         }
@@ -163,6 +230,7 @@
                 document.getElementById("main-content").classList.remove("hidden");
                 document.getElementById("adminActions").classList.remove("hidden");
                 document.getElementById("clearBtn").classList.remove("hidden");
+                document.getElementById("adminMenuBtn").classList.remove("hidden");
                 loadBookings();
             } else {
                 document.getElementById("error-message").classList.remove("hidden");
