@@ -32,15 +32,16 @@
         /* Login Page */
         #login {
             background: white;
-            padding: 20px;
-            width: 300px;
+            padding: 30px;
+            width: 350px;
             margin: auto;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: left;
         }
         input[type="password"] {
-            width: 80%;
-            padding: 8px;
+            width: 100%;
+            padding: 10px;
             margin: 10px 0;
             border: 1px solid #800000;
             border-radius: 5px;
@@ -49,9 +50,11 @@
             background: #800000;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 10px 20px;
             cursor: pointer;
             border-radius: 5px;
+            width: 100%;
+            margin-top: 10px;
         }
         button:hover {
             background: #5a0e0e;
@@ -60,6 +63,76 @@
             color: red;
             font-size: 14px;
             margin-top: 5px;
+        }
+        .tagline {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 14px;
+            margin-top: 20px;
+            color: #4A235A;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal h2 {
+            color: #800000;
+        }
+        .modal p {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        .modal a {
+            color: #800000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .modal a:hover {
+            text-decoration: underline;
+        }
+        #backButton {
+            background-color: #800000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #backButton:hover {
+            background-color: #5a0e0e;
         }
 
         /* Table Styling */
@@ -110,6 +183,7 @@
             <p id="error-message" class="error hidden">Incorrect password!</p>
         </div>
     </div>
+    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pre-made pin badges let you express yourself in style. From sleek minimalist designs to eye-catching custom artworks, we bring your ideas to life—one pin at a time. 🛍️💖 Get yours today and pin your story to the world!</p>
 
     <!-- Main Content -->
     <div id="main-content" class="container hidden">
@@ -142,6 +216,16 @@
         </div>
         
         <button id="clearBtn" class="hidden" onclick="clearBookings()">Clear All</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="thankYouModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Thank you for booking!</h2>
+            <p>Check your booking <a href="https://pinshoppe.github.io/bookinginfo/" target="_blank">here</a>.</p>
+            <button id="backButton">Back</button>
+        </div>
     </div>
 
     <script>
@@ -216,6 +300,56 @@
             localStorage.setItem("bookings", JSON.stringify(bookings));
             loadBookings();
         }
+
+        // Back button functionality
+        document.getElementById("backButton").addEventListener("click", function() {
+            window.history.back();
+        });
+
+        // Modal functionality
+        document.getElementById("bookingForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            let formData = {
+                name: document.getElementById("name").value.trim(),
+                contact: document.getElementById("contact").value.trim(),
+                grade: document.getElementById("grade").value.trim(),
+                design: document.getElementById("design").value,
+                date: document.getElementById("date").value,
+                time: document.getElementById("time").value,
+                customDesign: document.getElementById("customDesign").files[0] ? URL.createObjectURL(document.getElementById("customDesign").files[0]) : null
+            };
+
+            if (!formData.name || !formData.contact || !formData.grade || !formData.date || !formData.time) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            if (!formData.design && !formData.customDesign) {
+                alert("Please select a design or upload a custom design.");
+                return;
+            }
+
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings.push(formData);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+
+            // Show the modal
+            let modal = document.getElementById("thankYouModal");
+            modal.style.display = "block";
+
+            // Close the modal when the user clicks on <span> (x)
+            document.querySelector(".close").onclick = function() {
+                modal.style.display = "none";
+            };
+
+            // Close the modal when the user clicks anywhere outside of the modal
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+        });
     </script>
 </body>
 </html>
