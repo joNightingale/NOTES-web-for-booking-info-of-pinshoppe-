@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PinSHOPPE Booking Records</title>
     <style>
+        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f0ff;
@@ -28,16 +29,104 @@
         .hidden {
             display: none;
         }
-        .status-select {
-            padding: 5px;
+
+        /* Login Page */
+        #login {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        input[type="password"] {
+            width: 80%;
+            padding: 8px;
+            margin: 10px 0;
             border: 1px solid #800000;
             border-radius: 5px;
         }
+        button {
+            background: #800000;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #5a0e0e;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Table Styling */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #800000;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        /* Filters */
+        .filter-container {
+            margin-bottom: 15px;
+        }
+        .filter-container input, select {
+            padding: 5px;
+            margin-right: 5px;
+            border: 1px solid #800000;
+            border-radius: 5px;
+        }
+
     </style>
 </head>
 <body>
+    
+    <!-- Login Page -->
+    <div id="login">
+        <h2>🔒 Choose Your Role</h2>
+        <button onclick="setMode('viewer')">Viewer</button>
+        <button onclick="showPasswordInput()">Admin</button>
+        <div id="password-section" class="hidden">
+            <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+            <button onclick="verifyAdmin()">Login</button>
+            <p id="error-message" class="error hidden">Incorrect password!</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
     <div id="main-content" class="container hidden">
         <h2>📌 PinSHOPPE Booking Records</h2>
+        
+        <!-- Filters -->
+        <div class="filter-container">
+            <input type="text" id="searchName" placeholder="Search by Name" oninput="filterResults()">
+            <input type="text" id="searchContact" placeholder="Search by Contact" oninput="filterResults()">
+            <input type="text" id="searchGrade" placeholder="Search by Grade & Section" oninput="filterResults()">
+        </div>
+
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -49,45 +138,84 @@
                         <th>Custom Design</th>
                         <th>Date</th>
                         <th>Time</th>
-                        <th>Status</th>
                         <th id="adminActions" class="hidden">Action</th>
                     </tr>
                 </thead>
                 <tbody id="bookingList"></tbody>
             </table>
         </div>
+        
+        <button id="clearBtn" class="hidden" onclick="clearBookings()">Clear All</button>
     </div>
+
     <script>
         let isAdmin = false;
+
+        function showPasswordInput() {
+            document.getElementById("password-section").classList.remove("hidden");
+        }
+
+        function verifyAdmin() {
+            let password = document.getElementById("adminPassword").value;
+            if (password === "sodium_chloride") {
+                isAdmin = true;
+                document.getElementById("login").classList.add("hidden");
+                document.getElementById("main-content").classList.remove("hidden");
+                document.getElementById("adminActions").classList.remove("hidden");
+                document.getElementById("clearBtn").classList.remove("hidden");
+                loadBookings();
+            } else {
+                document.getElementById("error-message").classList.remove("hidden");
+            }
+        }
+
+        function setMode(mode) {
+            if (mode === "viewer") {
+                document.getElementById("login").classList.add("hidden");
+                document.getElementById("main-content").classList.remove("hidden");
+            }
+            loadBookings();
+        }
+
         function loadBookings() {
             let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
             let bookingList = document.getElementById("bookingList");
             bookingList.innerHTML = "";
+
             bookings.forEach((booking, index) => {
                 let row = document.createElement("tr");
                 row.innerHTML = `<td>${booking.name}</td>
                                  <td>${booking.contact}</td>
                                  <td>${booking.grade}</td>
                                  <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
-                                 <td>${booking.customDesign ? `<img src="${booking.customDesign}" width="50" height="50">` : 'None'}</td>
+                                 <td>${booking.customDesign ? `<img src="${booking.customDesign}" width="50" height="50" onclick="openImage('${booking.customDesign}')">` : 'None'}</td>
                                  <td>${booking.date}</td>
                                  <td>${booking.time}</td>
-                                 <td>
-                                    ${isAdmin ? `<select class='status-select' onchange='updateStatus(${index}, this.value)'>
-                                        <option value="Pending" ${booking.status === "Pending" ? "selected" : ""}>Pending</option>
-                                        <option value="Prepared" ${booking.status === "Prepared" ? "selected" : ""}>Prepared</option>
-                                        <option value="Shipping" ${booking.status === "Shipping" ? "selected" : ""}>Shipping</option>
-                                        <option value="Delivered" ${booking.status === "Delivered" ? "selected" : ""}>Delivered</option>
-                                    </select>` : booking.status}
-                                 </td>
                                  ${isAdmin ? `<td><button onclick="deleteBooking(${index})">🗑 Delete</button></td>` : ''}`;
                 bookingList.appendChild(row);
             });
         }
-        function updateStatus(index, status) {
+
+        function filterResults() {
+            let nameFilter = document.getElementById("searchName").value.toLowerCase();
+            let contactFilter = document.getElementById("searchContact").value.toLowerCase();
+            let gradeFilter = document.getElementById("searchGrade").value.toLowerCase();
+
+            [...document.querySelectorAll("#bookingList tr")].forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(nameFilter) && text.includes(contactFilter) && text.includes(gradeFilter) ? "" : "none";
+            });
+        }
+
+        function deleteBooking(index) {
             let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            bookings[index].status = status;
+            bookings.splice(index, 1);
             localStorage.setItem("bookings", JSON.stringify(bookings));
+            loadBookings();
+        }
+
+        function clearBookings() {
+            localStorage.removeItem("bookings");
             loadBookings();
         }
     </script>
