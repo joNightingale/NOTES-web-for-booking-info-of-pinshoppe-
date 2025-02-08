@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PinSHOPPE Booking Records</title>
     <style>
-        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f0ff;
@@ -29,43 +28,6 @@
         .hidden {
             display: none;
         }
-
-        /* Login Page */
-        #login {
-            background: white;
-            padding: 20px;
-            width: 300px;
-            margin: auto;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        input[type="password"] {
-            width: 80%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #800000;
-            border-radius: 5px;
-        }
-        button {
-            background: #800000;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        button:hover {
-            background: #5a0e0e;
-        }
-        .error {
-            color: red;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        /* Table Styling */
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -88,23 +50,9 @@
         tr:hover {
             background-color: #f2f2f2;
         }
-
-        /* Filters */
-        .filter-container {
-            margin-bottom: 15px;
-        }
-        .filter-container input, select {
-            padding: 5px;
-            margin-right: 5px;
-            border: 1px solid #800000;
-            border-radius: 5px;
-        }
-
     </style>
 </head>
 <body>
-    
-    <!-- Login Page -->
     <div id="login">
         <h2>🔒 Choose Your Role</h2>
         <button onclick="setMode('viewer')">Viewer</button>
@@ -116,17 +64,8 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div id="main-content" class="container hidden">
         <h2>📌 PinSHOPPE Booking Records</h2>
-        
-        <!-- Filters -->
-        <div class="filter-container">
-            <input type="text" id="searchName" placeholder="Search by Name" oninput="filterResults()">
-            <input type="text" id="searchContact" placeholder="Search by Contact" oninput="filterResults()">
-            <input type="text" id="searchGrade" placeholder="Search by Grade & Section" oninput="filterResults()">
-        </div>
-
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -135,17 +74,15 @@
                         <th>Contact</th>
                         <th>Grade & Section</th>
                         <th>Design</th>
-                        <th>Custom Design</th>
                         <th>Date</th>
                         <th>Time</th>
+                        <th>Status</th>
                         <th id="adminActions" class="hidden">Action</th>
                     </tr>
                 </thead>
                 <tbody id="bookingList"></tbody>
             </table>
         </div>
-        
-        <button id="clearBtn" class="hidden" onclick="clearBookings()">Clear All</button>
     </div>
 
     <script>
@@ -162,7 +99,6 @@
                 document.getElementById("login").classList.add("hidden");
                 document.getElementById("main-content").classList.remove("hidden");
                 document.getElementById("adminActions").classList.remove("hidden");
-                document.getElementById("clearBtn").classList.remove("hidden");
                 loadBookings();
             } else {
                 document.getElementById("error-message").classList.remove("hidden");
@@ -188,34 +124,31 @@
                                  <td>${booking.contact}</td>
                                  <td>${booking.grade}</td>
                                  <td>${booking.design ? 'Design ' + booking.design : 'Custom'}</td>
-                                 <td>${booking.customDesign ? `<img src="${booking.customDesign}" width="50" height="50" onclick="openImage('${booking.customDesign}')">` : 'None'}</td>
                                  <td>${booking.date}</td>
                                  <td>${booking.time}</td>
+                                 <td>${isAdmin ? getStatusDropdown(index, booking.status) : booking.status}</td>
                                  ${isAdmin ? `<td><button onclick="deleteBooking(${index})">🗑 Delete</button></td>` : ''}`;
                 bookingList.appendChild(row);
             });
         }
 
-        function filterResults() {
-            let nameFilter = document.getElementById("searchName").value.toLowerCase();
-            let contactFilter = document.getElementById("searchContact").value.toLowerCase();
-            let gradeFilter = document.getElementById("searchGrade").value.toLowerCase();
+        function getStatusDropdown(index, currentStatus) {
+            let statuses = ["Pending", "Prepared", "Shipping", "Delivered"];
+            let options = statuses.map(status => `<option value="${status}" ${status === currentStatus ? "selected" : ""}>${status}</option>`).join('');
+            return `<select onchange="updateStatus(${index}, this.value)">${options}</select>`;
+        }
 
-            [...document.querySelectorAll("#bookingList tr")].forEach(row => {
-                let text = row.innerText.toLowerCase();
-                row.style.display = text.includes(nameFilter) && text.includes(contactFilter) && text.includes(gradeFilter) ? "" : "none";
-            });
+        function updateStatus(index, newStatus) {
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings[index].status = newStatus;
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+            loadBookings();
         }
 
         function deleteBooking(index) {
             let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
             bookings.splice(index, 1);
             localStorage.setItem("bookings", JSON.stringify(bookings));
-            loadBookings();
-        }
-
-        function clearBookings() {
-            localStorage.removeItem("bookings");
             loadBookings();
         }
     </script>
