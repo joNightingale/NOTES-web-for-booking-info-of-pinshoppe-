@@ -3,158 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Note Storage</title>
+    <title>NOTES - Booking Info</title>
     <style>
         body {
-            font-family: 'Times New Roman', serif;
-            background-color: white;
-            color: #4A235A;
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
             margin: 0;
             padding: 0;
             transition: background 0.3s, color 0.3s;
         }
-        /* Header */
+        .dark-mode {
+            background-color: #121212;
+            color: #f5f5f5;
+        }
         header {
             background-color: #800000;
             color: white;
+            padding: 15px;
             text-align: center;
-            padding: 15px 0;
             font-size: 24px;
             position: relative;
         }
         /* Sidebar */
-        .menu-btn {
-            position: absolute;
-            left: 10px;
-            top: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: white;
-        }
         .sidebar {
             position: fixed;
-            left: -250px;
             top: 0;
+            left: -250px;
             width: 250px;
             height: 100%;
-            background: #4A235A;
+            background: #2c2c2c;
             color: white;
-            padding-top: 60px;
-            transition: 0.3s;
+            padding: 15px;
+            transition: left 0.3s;
         }
         .sidebar a {
             display: block;
             color: white;
-            padding: 15px;
             text-decoration: none;
-            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            border-bottom: 1px solid #444;
         }
         .sidebar a:hover {
-            background: #6D1B7B;
+            background: #444;
         }
-        /* Dark Mode */
-        .dark-mode {
-            background-color: black;
+        .sidebar-open {
+            left: 0;
+        }
+        /* Menu Button */
+        .menu-btn {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
             color: white;
-        }
-        /* Container */
-        .container {
-            width: 60%;
-            margin: 20px auto;
-            background: #f8f0ff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-        }
-        textarea {
-            width: 100%;
-            height: 300px;
-            padding: 10px;
-            border: 1px solid #800000;
-            border-radius: 5px;
-            resize: none;
-        }
-        /* Tracker Button */
-        .tracker-btn {
-            display: block;
-            width: 60%;
-            margin: 20px auto;
-            background-color: #800000;
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .tracker-btn:hover {
-            background-color: #5a0e0e;
         }
     </style>
 </head>
 <body>
 <header>
-    <span class="menu-btn" onclick="toggleSidebar()">☰</span>
-    <h1>Note Storage</h1>
-    <p>Securely store your important notes</p>
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    NOTES - Booking Info
 </header>
 
-<!-- Sidebar Menu -->
+<!-- Sidebar (Admin Only) -->
 <div class="sidebar" id="sidebar">
-    <a href="#" onclick="toggleDarkMode()">🌗 Light/Dark Mode</a>
+    <h3>Admin Settings</h3>
+    <a href="#" onclick="toggleDarkMode()">🌙 Light/Dark Mode</a>
     <a href="#" onclick="trackIP()">📍 Track Visitor IP</a>
-    <a href="#">🔍 Track Someone (Coming Soon)</a>
-    <a href="#" onclick="showArchive()">📂 View Note Archive</a>
+    <a href="#" onclick="trackUser()">👀 Track Activity</a>
+    <a href="#" onclick="showArchived()">📂 Archived Bookings</a>
 </div>
 
-<!-- Note Storage -->
-<div class="container">
-    <h2>Stored Notes</h2>
-    <textarea id="notes" placeholder="Type your notes here..."></textarea>
+<!-- Content -->
+<div class="content">
+    <h2>Bookings Information</h2>
+    <p>All recorded bookings appear here.</p>
 </div>
-
-<footer>
-    <p>&copy; 2025 Note Storage. All Rights Reserved.</p>
-</footer>
 
 <script>
-    // Sidebar Toggle
     function toggleSidebar() {
-        let sidebar = document.getElementById("sidebar");
-        sidebar.style.left = sidebar.style.left === "0px" ? "-250px" : "0px";
+        document.getElementById("sidebar").classList.toggle("sidebar-open");
     }
 
-    // Light/Dark Mode Toggle
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
     }
 
-    // Track Visitor IP
     function trackIP() {
         fetch("https://api64.ipify.org?format=json")
-        .then(response => response.json())
-        .then(data => {
-            let ips = JSON.parse(localStorage.getItem("visitorIPs")) || [];
-            ips.push(data.ip);
-            localStorage.setItem("visitorIPs", JSON.stringify(ips));
-            alert("Your IP (" + data.ip + ") has been recorded.");
-        })
-        .catch(() => alert("Failed to track IP."));
+            .then(response => response.json())
+            .then(data => alert("Visitor IP: " + data.ip))
+            .catch(() => alert("Could not fetch IP."));
     }
 
-    // Archive Notes
-    function showArchive() {
-        let notes = localStorage.getItem("notesArchive") || "No archived notes.";
-        alert("Archived Notes: \n" + notes);
+    function trackUser() {
+        alert("Tracking user activity... (Feature to be expanded)");
     }
 
-    // Auto Save Notes
-    let notesField = document.getElementById("notes");
-    notesField.value = localStorage.getItem("savedNotes") || "";
-    notesField.addEventListener("input", () => {
-        localStorage.setItem("savedNotes", notesField.value);
-    });
+    function showArchived() {
+        alert("Showing archived bookings... (Feature to be expanded)");
+    }
 </script>
 </body>
 </html>
