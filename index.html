@@ -122,16 +122,17 @@
         .modal a:hover {
             text-decoration: underline;
         }
-        #backButton {
+        .backButton {
             background-color: #800000;
             color: white;
-            padding: 10px 20px;
+            padding: 5px 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 12px;
+            margin-top: 10px;
         }
-        #backButton:hover {
+        .backButton:hover {
             background-color: #5a0e0e;
         }
 
@@ -182,7 +183,6 @@
             <button onclick="verifyAdmin()">Login</button>
             <p id="error-message" class="error hidden">Incorrect password!</p>
         </div>
-        <button id="backButtonLogin" onclick="goBack()">Back</button>
     </div>
     <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pre-made pin badges let you express yourself in style. From sleek minimalist designs to eye-catching custom artworks, we bring your ideas to life—one pin at a time. 🛍️💖 Get yours today and pin your story to the world!</p>
 
@@ -217,7 +217,7 @@
         </div>
         
         <button id="clearBtn" class="hidden" onclick="clearBookings()">Clear All</button>
-        <button id="backButtonMain" onclick="goBack()">Back</button>
+        <button class="backButton" onclick="goBack()">Back</button>
     </div>
 
     <!-- Modal -->
@@ -226,7 +226,7 @@
             <span class="close">&times;</span>
             <h2>Thank you for booking!</h2>
             <p>Check your booking <a href="https://pinshoppe.github.io/bookinginfo/" target="_blank">here</a>.</p>
-            <button id="backButton">Back</button>
+            <button class="backButton" onclick="goBack()">Back</button>
         </div>
     </div>
 
@@ -305,10 +305,9 @@
 
         // Back button functionality
         function goBack() {
-            window.history.back();
+            document.getElementById("main-content").classList.add("hidden");
+            document.getElementById("login").classList.remove("hidden");
         }
-
-        document.getElementById("backButton").addEventListener("click", goBack);
 
         // Modal functionality
         document.getElementById("bookingForm").addEventListener("submit", function(event) {
