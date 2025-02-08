@@ -37,7 +37,7 @@
             margin: auto;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: left;
+            text-align: center;
         }
         input[type="password"] {
             width: 100%;
@@ -169,6 +169,22 @@
             margin-right: 5px;
             border: 1px solid #800000;
             border-radius: 5px;
+        }
+
+        /* Media Queries for Mobile */
+        @media (max-width: 600px) {
+            #login {
+                width: 90%;
+                padding: 20px;
+            }
+            button {
+                padding: 10px;
+                margin-top: 5px;
+            }
+            .tagline {
+                font-size: 12px;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
