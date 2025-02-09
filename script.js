@@ -88,24 +88,21 @@ function goBack() {
     document.getElementById("adminMenu").classList.add("hidden");
 }
 
-function toggleMenu() {
-    document.querySelector('.menu-toggle').classList.toggle('open');
-    // Toggle admin menu visibility
-    if (isAdmin) {
-        document.getElementById("adminMenu").classList.toggle("hidden");
+function toggleIPList() {
+    let ipList = document.getElementById("ipAddressList");
+    if (ipList.classList.contains("hidden")) {
+        ipList.classList.remove("hidden");
+    } else {
+        ipList.classList.add("hidden");
     }
 }
 
-function showIPList() {
-    document.getElementById("adminArchive").classList.add("hidden");
-    document.getElementById("ipAddressList").classList.remove("hidden");
-    loadIPList();
-}
-
-function showArchiveList() {
-    document.getElementById("ipAddressList").classList.add("hidden");
-    document.getElementById("adminArchive").classList.remove("hidden");
-    loadArchive();
+function toggleArchiveList() {
+    let archiveList = document.getElementById("adminArchive");
+    if (archiveList.classList.contains("hidden")) {
+        archiveList.classList.remove("hidden");
+    } else {
+        archiveList.classList.add("hidden");
 }
 
 function trackIP() {
