@@ -106,13 +106,15 @@ function trackIP() {
             let timestamp = new Date().toLocaleString();
             visitorIPs.push({ ip: data.ip, timestamp: timestamp });
             localStorage.setItem("visitorIPs", JSON.stringify(visitorIPs));
-        });
+            loadIPList(); // Refresh the IP list display after tracking
+        })
+        .catch(error => console.error('Error fetching IP:', error));
 }
 
 function archiveBookings() {
     archivedBookings = [...bookings];
     localStorage.setItem("archivedBookings", JSON.stringify(archivedBookings));
-    loadArchive();
+    loadArchive(); // Refresh the archive list display after archiving
     alert("Bookings have been archived.");
 }
 
