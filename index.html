@@ -171,6 +171,42 @@
             border-radius: 5px;
         }
 
+        /* Hamburger Menu Button */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+        }
+        .menu-toggle:focus {
+            outline: none;
+        }
+        .menu-toggle div {
+            width: 30px;
+            height: 3px;
+            background: #800000;
+            border-radius: 10px;
+            transition: all 0.3s linear;
+            position: relative;
+            transform-origin: 1px;
+        }
+        .menu-toggle.open div:nth-child(1) {
+            transform: rotate(45deg);
+        }
+        .menu-toggle.open div:nth-child(2) {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        .menu-toggle.open div:nth-child(3) {
+            transform: rotate(-45deg);
+        }
+
         /* Media Queries for Mobile */
         @media (max-width: 600px) {
             #login {
@@ -184,6 +220,9 @@
             .tagline {
                 font-size: 12px;
                 margin-top: 10px;
+            }
+            .menu-toggle {
+                display: flex;
             }
         }
     </style>
@@ -200,12 +239,25 @@
             <p id="error-message" class="error hidden">Incorrect password!</p>
         </div>
     </div>
-    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pre-made pins are the best picks for you!!
+    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pr[...]
 
     <!-- Main Content -->
     <div id="main-content" class="container hidden">
         <h2>📌 PinSHOPPE Booking Records</h2>
         
+        <!-- Hamburger Menu Button -->
+        <button class="menu-toggle" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </button>
+
+        <!-- Admin Menu -->
+        <div id="adminMenu" class="hidden">
+            <button onclick="trackIP()">Track IP</button>
+            <button onclick="archiveBookings()">Archive Bookings</button>
+        </div>
+
         <!-- Filters -->
         <div class="filter-container">
             <input type="text" id="searchName" placeholder="Search by Name" oninput="filterResults()">
@@ -262,6 +314,7 @@
                 document.getElementById("main-content").classList.remove("hidden");
                 document.getElementById("adminActions").classList.remove("hidden");
                 document.getElementById("clearBtn").classList.remove("hidden");
+                document.getElementById("adminMenu").classList.remove("hidden");
                 loadBookings();
             } else {
                 document.getElementById("error-message").classList.remove("hidden");
@@ -326,6 +379,25 @@
             document.getElementById("error-message").classList.add("hidden");
             document.getElementById("main-content").classList.add("hidden");
             document.getElementById("login").classList.remove("hidden");
+            document.getElementById("adminMenu").classList.add("hidden");
+        }
+
+        function toggleMenu() {
+            document.querySelector('.menu-toggle').classList.toggle('open');
+            // Toggle admin menu visibility
+            if (isAdmin) {
+                document.getElementById("adminMenu").classList.toggle("hidden");
+            }
+        }
+
+        function trackIP() {
+            // Implement IP tracking logic here
+            alert("IP tracking feature is under construction.");
+        }
+
+        function archiveBookings() {
+            // Implement booking list archiving logic here
+            alert("Booking list archive feature is under construction.");
         }
 
         // Modal functionality
@@ -352,21 +424,14 @@
                 return;
             }
 
-            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-
-            // Check for duplicates
-            let isDuplicate = bookings.some(booking => 
-                booking.name === formData.name &&
-                booking.contact === formData.contact &&
-                booking.grade === formData.grade &&
-                booking.date === formData.date &&
-                booking.time === formData.time
+            // Delete duplicate if exists
+            bookings = bookings.filter(booking => 
+                !(booking.name === formData.name &&
+                  booking.contact === formData.contact &&
+                  booking.grade === formData.grade &&
+                  booking.date === formData.date &&
+                  booking.time === formData.time)
             );
-
-            if (isDuplicate) {
-                alert("Duplicate booking detected. Please modify your details.");
-                return;
-            }
 
             bookings.push(formData);
             localStorage.setItem("bookings", JSON.stringify(bookings));
