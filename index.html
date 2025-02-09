@@ -174,7 +174,7 @@
 
         /* Hamburger Menu Button */
         .menu-toggle {
-            display: none;
+            display: flex;
             flex-direction: column;
             justify-content: space-around;
             width: 30px;
@@ -226,9 +226,6 @@
                 font-size: 12px;
                 margin-top: 10px;
             }
-            .menu-toggle {
-                display: flex;
-            }
         }
     </style>
 </head>
@@ -244,7 +241,7 @@
             <p id="error-message" class="error hidden">Incorrect password!</p>
         </div>
     </div>
-    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pre made pins are made just for you!!!
+    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pr[...]
 
     <!-- Main Content -->
     <div id="main-content" class="container hidden">
@@ -261,6 +258,14 @@
         <div id="adminMenu" class="hidden">
             <button onclick="trackIP()">Track IP</button>
             <button onclick="archiveBookings()">Archive Bookings</button>
+        </div>
+
+        <!-- Admin Archive and IP List -->
+        <div id="adminArchive" class="hidden">
+            <h3>Archived Bookings</h3>
+            <ul id="archiveList"></ul>
+            <h3>IP Address List</h3>
+            <ul id="ipList"></ul>
         </div>
 
         <!-- Filters -->
