@@ -177,10 +177,10 @@
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             background: #fff;
-            border: 1px solid #800000;
+            border: 2px solid #800000;
             border-radius: 5px;
             cursor: pointer;
             padding: 0;
@@ -193,8 +193,8 @@
             outline: none;
         }
         .menu-toggle div {
-            width: 20px;
-            height: 2px;
+            width: 30px;
+            height: 3px;
             background: #800000;
             border-radius: 10px;
             transition: all 0.3s linear;
@@ -256,14 +256,18 @@
 
         <!-- Admin Menu -->
         <div id="adminMenu" class="hidden">
-            <button onclick="trackIP()">Track IP</button>
-            <button onclick="archiveBookings()">Archive Bookings</button>
+            <button onclick="showIPList()">IP Address List</button>
+            <button onclick="showArchiveList()">Archived Bookings</button>
         </div>
 
-        <!-- Admin Archive and IP List -->
+        <!-- Admin Archive -->
         <div id="adminArchive" class="hidden">
             <h3>Archived Bookings</h3>
             <ul id="archiveList"></ul>
+        </div>
+
+        <!-- IP Address List -->
+        <div id="ipAddressList" class="hidden">
             <h3>IP Address List</h3>
             <ul id="ipList"></ul>
         </div>
