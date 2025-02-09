@@ -91,6 +91,7 @@ function goBack() {
 function toggleIPList() {
     let ipList = document.getElementById("ipAddressList");
     if (ipList.classList.contains("hidden")) {
+        loadIPList(); // Load IP list when showing
         ipList.classList.remove("hidden");
     } else {
         ipList.classList.add("hidden");
@@ -100,9 +101,11 @@ function toggleIPList() {
 function toggleArchiveList() {
     let archiveList = document.getElementById("adminArchive");
     if (archiveList.classList.contains("hidden")) {
+        loadArchive(); // Load archive list when showing
         archiveList.classList.remove("hidden");
     } else {
         archiveList.classList.add("hidden");
+    }
 }
 
 function trackIP() {
