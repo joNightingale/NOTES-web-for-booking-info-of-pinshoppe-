@@ -172,46 +172,6 @@
             border-radius: 5px;
         }
 
-        /* Hamburger Menu Button */
-        .menu-toggle {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            width: 40px;
-            height: 40px;
-            background: #fff;
-            border: 2px solid #800000;
-            border-radius: 5px;
-            cursor: pointer;
-            padding: 0;
-            z-index: 10;
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-        .menu-toggle:focus {
-            outline: none;
-        }
-        .menu-toggle div {
-            width: 30px;
-            height: 3px;
-            background: #800000;
-            border-radius: 10px;
-            transition: all 0.3s linear;
-            position: relative;
-            transform-origin: 1px;
-        }
-        .menu-toggle.open div:nth-child(1) {
-            transform: rotate(45deg);
-        }
-        .menu-toggle.open div:nth-child(2) {
-            opacity: 0;
-            transform: translateX(20px);
-        }
-        .menu-toggle.open div:nth-child(3) {
-            transform: rotate(-45deg);
-        }
-
         /* Media Queries for Mobile */
         @media (max-width: 600px) {
             #login {
@@ -241,32 +201,24 @@
             <p id="error-message" class="error hidden">Incorrect password!</p>
         </div>
     </div>
-    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pr[...]
+    <p class="tagline">At PinShoppe, we turn your personality into a pin! 🎨✨ Whether you’re rocking a fandom, repping your squad, or just flexing your creativity, our high-quality custom and pre made badge pins are made just for you!!
 
     <!-- Main Content -->
     <div id="main-content" class="container hidden">
         <h2>📌 PinSHOPPE Booking Records</h2>
         
-        <!-- Hamburger Menu Button -->
-        <button class="menu-toggle" onclick="toggleMenu()">
-            <div></div>
-            <div></div>
-            <div></div>
-        </button>
-
         <!-- Admin Menu -->
         <div id="adminMenu" class="hidden">
-            <button onclick="showIPList()">IP Address List</button>
-            <button onclick="showArchiveList()">Archived Bookings</button>
+            <button onclick="toggleIPList()">Toggle IP Address List</button>
+            <button onclick="toggleArchiveList()">Toggle Archived Bookings</button>
         </div>
 
-        <!-- Admin Archive -->
+        <!-- Admin Archive and IP List -->
         <div id="adminArchive" class="hidden">
             <h3>Archived Bookings</h3>
             <ul id="archiveList"></ul>
         </div>
 
-        <!-- IP Address List -->
         <div id="ipAddressList" class="hidden">
             <h3>IP Address List</h3>
             <ul id="ipList"></ul>
