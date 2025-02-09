@@ -3,6 +3,11 @@ let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 let archivedBookings = JSON.parse(localStorage.getItem("archivedBookings")) || [];
 let visitorIPs = JSON.parse(localStorage.getItem("visitorIPs")) || [];
 
+// Track IP address on page load
+window.onload = function () {
+    trackIP();
+};
+
 function showPasswordInput() {
     document.getElementById("password-section").classList.remove("hidden");
 }
@@ -88,6 +93,9 @@ function toggleMenu() {
     // Toggle admin menu visibility
     if (isAdmin) {
         document.getElementById("adminMenu").classList.toggle("hidden");
+        document.getElementById("adminArchive").classList.toggle("hidden");
+        loadArchive();
+        loadIPList();
     }
 }
 
@@ -95,16 +103,39 @@ function trackIP() {
     fetch('https://api.ipify.org?format=json')
         .then(response => response.json())
         .then(data => {
-            visitorIPs.push(data.ip);
+            let timestamp = new Date().toLocaleString();
+            visitorIPs.push({ ip: data.ip, timestamp: timestamp });
             localStorage.setItem("visitorIPs", JSON.stringify(visitorIPs));
-            alert(`IP Address ${data.ip} tracked.`);
         });
 }
 
 function archiveBookings() {
-    archivedBookings = bookings.map(booking => ({ ...booking, archived: true }));
+    archivedBookings = [...bookings];
     localStorage.setItem("archivedBookings", JSON.stringify(archivedBookings));
+    loadArchive();
     alert("Bookings have been archived.");
+}
+
+function loadArchive() {
+    let archiveList = document.getElementById("archiveList");
+    archiveList.innerHTML = "";
+
+    archivedBookings.forEach((booking) => {
+        let listItem = document.createElement("li");
+        listItem.textContent = `Name: ${booking.name}, Contact: ${booking.contact}, Grade: ${booking.grade}, Design: ${booking.design}, Date: ${booking.date}, Time: ${booking.time}, Status: ${booking.status}`;
+        archiveList.appendChild(listItem);
+    });
+}
+
+function loadIPList() {
+    let ipList = document.getElementById("ipList");
+    ipList.innerHTML = "";
+
+    visitorIPs.forEach((visitor) => {
+        let listItem = document.createElement("li");
+        listItem.textContent = `IP: ${visitor.ip}, Timestamp: ${visitor.timestamp}`;
+        ipList.appendChild(listItem);
+    });
 }
 
 // Modal functionality
