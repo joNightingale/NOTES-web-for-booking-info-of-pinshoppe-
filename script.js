@@ -93,10 +93,19 @@ function toggleMenu() {
     // Toggle admin menu visibility
     if (isAdmin) {
         document.getElementById("adminMenu").classList.toggle("hidden");
-        document.getElementById("adminArchive").classList.toggle("hidden");
-        loadArchive();
-        loadIPList();
     }
+}
+
+function showIPList() {
+    document.getElementById("adminArchive").classList.add("hidden");
+    document.getElementById("ipAddressList").classList.remove("hidden");
+    loadIPList();
+}
+
+function showArchiveList() {
+    document.getElementById("ipAddressList").classList.add("hidden");
+    document.getElementById("adminArchive").classList.remove("hidden");
+    loadArchive();
 }
 
 function trackIP() {
